@@ -1,37 +1,44 @@
 # IKEv2 VPN Server on Docker
 
-Recipe to build [`gaomd/ikev2-vpn-server`](https://registry.hub.docker.com/u/gaomd/ikev2-vpn-server/) Docker image.
+The original readme please see:
+ - https://github.com/gaomd/docker-ikev2-vpn-server
 
-## Usage
+New feature:
+ - Support windows, android with certificate file
 
-### 1. Start the IKEv2 VPN Server
+## Setup server
 
-    docker run -d --name ikev2-vpn-server --restart=always --privileged -p 500:500/udp -p 4500:4500/udp gaomd/ikev2-vpn-server:0.3.0
+```
+git clone https://github.com/tiennan/docker-ikev2-vpn-server.git
 
-### 2. Generate the .mobileconfig (for iOS / OS X)
+cd docker-ikev2-vpn-server
 
-    docker run -i -t --rm --volumes-from ikev2-vpn-server -e "HOST=vpn1.example.com" gaomd/ikev2-vpn-server:0.3.0 generate-mobileconfig > ikev2-vpn.mobileconfig
+sudo docker build -t tsl0922/docker-ikev2-vpn-server:v1 .
 
-*Be sure to replace `vpn1.example.com` with your own domain name and resolve it to you server's IP address. Simply put an IP address is supported as well (and enjoy an even faster handshake speed).*
+sudo docker run --privileged -d --name ikev2-vpn-server --restart=always -p 500:500/udp -p 4500:4500/udp -e "CERT_CN=vpn1.example.com" -e "VPN_USER=your_username" -e "VPN_PASSWORD=your_password" tsl0922/docker-ikev2-vpn-server:v1
 
-Transfer the generated `ikev2-vpn.mobileconfig` file to your local computer via SSH tunnel (`scp`) or any other secure methods.
+sudo docker run --privileged -i -t --rm --volumes-from ikev2-vpn-server -e "HOST=vpn1.example.com" tsl0922/docker-ikev2-vpn-server:v1 generate-mobileconfig > ikev2-vpn.mobileconfig
 
-### 3. Install the .mobileconfig (for iOS / OS X)
+```
+ - `vpn1.example.com` // your server domain or ip
+ - `your_username` // username for windows clinet
+ - `your_password` // password for windows client
+ 
+## Setup clients
 
-- **iOS 9 or later**: AirDrop the `.mobileconfig` file to your iOS 9 device, finish the **Install Profile** screen;
+#### iOS/Mac
+ - please see https://github.com/gaomd/docker-ikev2-vpn-server
+ 
+#### windows/Android
+1. copy certificate from container to server
+```
+sudo docker cp {ContainerID}:/etc/ipsec.d/certs/clientCert.p12 .
+```
+2. copy certificate from server to local
+```
+scp {USER}@{IP}:/path/to/clientCert.p12 .
+```
+3. double click to install certificate into your computer
 
-- **OS X 10.11 El Capitan or later**: Double click the `.mobileconfig` file to start the *profile installation* wizard.
-
-## Technical Details
-
-Upon container creation, a *shared secret* was generated for authentication purpose, no *certificate*, *username*, or *password* was ever used, simple life!
-
-## License
-
-Copyright (c) 2016 Mengdi Gao, This software is licensed under the [MIT License](LICENSE).
-
----
-
-\* IKEv2 protocol requires iOS 8 or later, Mac OS X 10.11 El Capitan is supported as well.
-
-\* Install for **iOS 8 or later** or when your AirDrop fails: Send an E-mail to your iOS device with the `.mobileconfig` file as attachment, then tap the attachment to bring up and finish the **Install Profile** screen.
+ - please see https://shenyuqi.com/archives/541 for more useful tips
+ 
