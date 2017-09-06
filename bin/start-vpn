@@ -96,6 +96,18 @@ conn win
     rightsendcert=never
     eap_identity=%any
     auto=add
+
+conn networkmanager-strongswan
+    keyexchange=ikev2
+    left=%defaultroute
+    leftauth=pubkey
+    leftsubnet=0.0.0.0/0
+    leftcert=serverCert.pem
+    right=%any
+    rightauth=pubkey
+    rightsourceip=10.8.0.0/16
+    rightcert=clientCert.pem
+    auto=add
 EOF
 	VPN_USER=${VPN_USER:-vpnuser}
 	VPN_PASSWORD=${VPN_PASSWORD:-$(openssl rand -base64 32 2>/dev/null)}
