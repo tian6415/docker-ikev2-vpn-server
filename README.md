@@ -4,7 +4,8 @@ The original readme please see:
  - https://github.com/gaomd/docker-ikev2-vpn-server
 
 New feature:
- - Support windows, android with certificate file
+ - Support Android with Xauth PSK (15 Dec. 2017)
+ - Support windows with certificate file
 
 ## Setup server
 
@@ -21,15 +22,15 @@ sudo docker run --privileged -i -t --rm --volumes-from ikev2-vpn-server -e "HOST
 
 ```
  - `vpn1.example.com` // your server domain or ip
- - `your_username` // username for windows clinet
- - `your_password` // password for windows client
+ - `your_username` // username for windows/android clinet
+ - `your_password` // password for windows/android client
  
 ## Setup clients
 
 #### iOS/Mac
  - please see https://github.com/gaomd/docker-ikev2-vpn-server
  
-#### windows/Android
+#### windows
 1. copy certificate from container to server
 ```
 sudo docker cp {ContainerID}:/etc/ipsec.d/certs/clientCert.p12 .
@@ -42,3 +43,6 @@ scp {USER}@{IP}:/path/to/clientCert.p12 .
 
  - please see https://shenyuqi.com/archives/541 for more useful tips
  
+#### Android
+1. choose VPN protocal - IPSec Xauth PSK
+2. enter your username, password and pre-shared key (PSK)
