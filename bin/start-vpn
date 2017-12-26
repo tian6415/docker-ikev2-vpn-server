@@ -103,6 +103,7 @@ EOF
 
 : RSA serverKey.pem
 $VPN_USER : EAP 	"$VPN_PASSWORD"
+$VPN_USER : XAUTH 	"$VPN_PASSWORD"
 EOF
 fi
 
